@@ -1,0 +1,2142 @@
+<!doctype html>
+<html lang="id" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class 7-J Dashboard</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .app-wrapper {
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
+        transition: background 0.5s ease;
+        position: relative;
+      }
+
+      .sun {
+        box-shadow:
+          0 0 60px rgba(255, 215, 0, 0.6),
+          0 0 100px rgba(255, 165, 0, 0.3);
+      }
+
+      .card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+      }
+
+      .student-card {
+        transition: all 0.3s ease;
+      }
+
+      .student-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15);
+      }
+
+      .student-card.dragging {
+        opacity: 0.7;
+        cursor: grabbing;
+      }
+
+      .student-card {
+        cursor: grab;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .sun {
+        animation:
+          rotate 30s linear infinite,
+          pulse 3s ease-in-out infinite;
+      }
+
+      @keyframes float1 {
+        0%,
+        100% {
+          transform: translateX(0) translateY(0);
+        }
+        50% {
+          transform: translateX(20px) translateY(-10px);
+        }
+      }
+
+      @keyframes float2 {
+        0%,
+        100% {
+          transform: translateX(0) translateY(0);
+        }
+        50% {
+          transform: translateX(-15px) translateY(8px);
+        }
+      }
+
+      @keyframes float3 {
+        0%,
+        100% {
+          transform: translateX(0) translateY(0);
+        }
+        50% {
+          transform: translateX(25px) translateY(-5px);
+        }
+      }
+
+      @keyframes float4 {
+        0%,
+        100% {
+          transform: translateX(0) translateY(0);
+        }
+        50% {
+          transform: translateX(-20px) translateY(12px);
+        }
+      }
+
+      .cloud:nth-child(3n + 1) {
+        animation: float1 8s ease-in-out infinite;
+      }
+      .cloud:nth-child(3n + 2) {
+        animation: float2 10s ease-in-out infinite;
+      }
+      .cloud:nth-child(3n) {
+        animation: float3 12s ease-in-out infinite;
+      }
+      .cloud:nth-child(4n) {
+        animation: float4 9s ease-in-out infinite;
+      }
+
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        25% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        75% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-10vh) translateX(0);
+          opacity: 1;
+        }
+        85% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) translateX(-300px);
+          opacity: 0;
+        }
+      }
+
+      @keyframes fallSparkle {
+        0% {
+          box-shadow:
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 60px rgba(255, 255, 255, 0.9);
+          opacity: 1;
+        }
+        100% {
+          box-shadow:
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 60px rgba(255, 255, 255, 0.9);
+          opacity: 1;
+        }
+      }
+
+      .star {
+        position: fixed;
+        width: 3px;
+        height: 3px;
+        background: white;
+        border-radius: 50%;
+        animation: sparkle 1.5s ease-in-out infinite;
+        z-index: 0;
+        box-shadow:
+          0 0 8px rgba(255, 255, 255, 0.9),
+          0 0 15px rgba(255, 255, 255, 0.5);
+      }
+
+      .star:nth-child(2n) {
+        animation-duration: 2s;
+      }
+      .star:nth-child(3n) {
+        animation-duration: 1.8s;
+      }
+      .star:nth-child(4n) {
+        animation-duration: 2.3s;
+      }
+      .star:nth-child(5n) {
+        animation-duration: 1.6s;
+      }
+
+      .falling-star {
+        position: fixed;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        z-index: 0;
+        box-shadow:
+          0 0 6px rgba(255, 255, 255, 0.8),
+          0 0 12px rgba(255, 255, 255, 0.4);
+        pointer-events: none;
+      }
+
+      @keyframes moonGlow {
+        0%,
+        100% {
+          box-shadow:
+            0 0 60px rgba(200, 200, 255, 0.8),
+            0 0 100px rgba(150, 150, 255, 0.4);
+        }
+        50% {
+          box-shadow:
+            0 0 80px rgba(200, 200, 255, 1),
+            0 0 120px rgba(150, 150, 255, 0.6);
+        }
+      }
+
+      .moon {
+        animation: moonGlow 4s ease-in-out infinite;
+      }
+
+      .emoji-container {
+        display: inline-block;
+      }
+    </style>
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  </head>
+  <body class="h-full">
+    <div class="app-wrapper" id="appWrapper">
+      <button
+        id="modeToggle"
+        style="
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          cursor: pointer;
+          z-index: 100;
+          font-size: 35px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        "
+        onmouseover="
+          this.style.transform = 'scale(1.1)';
+          this.style.boxShadow = '0 12px 30px rgba(0,0,0,0.7)';
+        "
+        onmouseout="
+          this.style.transform = 'scale(1)';
+          this.style.boxShadow = '0 8px 20px rgba(0,0,0,0.5)';
+        "
+      >
+        🌙
+      </button>
+      <div
+        id="celestialBody"
+        class="moon"
+        style="
+          position: fixed;
+          top: 20px;
+          right: 50px;
+          width: 120px;
+          height: 120px;
+          background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 50%;
+          box-shadow:
+            0 0 80px rgba(248, 249, 250, 0.6),
+            0 0 120px rgba(226, 232, 240, 0.3);
+          z-index: 0;
+          transition: all 0.5s ease;
+          cursor: pointer;
+        "
+        onmouseover="this.style.transform = 'scale(1.1)'"
+        onmouseout="this.style.transform = 'scale(1)'"
+      ></div>
+      <div
+        id="starsContainer"
+        style="
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          opacity: 1;
+          transition: opacity 0.5s ease;
+          pointer-events: none;
+        "
+      ></div>
+      <!-- Clouds -->
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 80px;
+          left: 10%;
+          width: 200px;
+          height: 80px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 70px;
+          left: 11%;
+          width: 110px;
+          height: 65px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 75px;
+          left: 9%;
+          width: 95px;
+          height: 60px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 120px;
+          right: 15%;
+          width: 230px;
+          height: 90px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 110px;
+          right: 16%;
+          width: 130px;
+          height: 75px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 115px;
+          right: 14%;
+          width: 115px;
+          height: 70px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 60px;
+          left: 45%;
+          width: 180px;
+          height: 70px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 52px;
+          left: 46%;
+          width: 100px;
+          height: 58px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="cloud"
+        style="
+          position: fixed;
+          top: 56px;
+          left: 44%;
+          width: 90px;
+          height: 55px;
+          background: white;
+          border-radius: 100px;
+          opacity: 0.8;
+          z-index: 0;
+          display: none;
+        "
+      ></div>
+      <div
+        class="w-full p-6 md:p-8"
+        style="
+          position: relative;
+          z-index: 1;
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <div class="max-w-6xl mx-auto w-full flex-1">
+          <div class="text-center mb-12">
+            <h1
+              id="mainTitle"
+              class="text-5xl md:text-7xl font-extrabold mb-4"
+              style="
+                background: linear-gradient(to right, #ea580c, #dc2626);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              Class 7-J
+            </h1>
+            <p
+              id="subtitle"
+              class="text-lg md:text-xl text-gray-700 font-medium"
+            >
+              Together We Learn, Together We Grow! 🌟
+            </p>
+          </div>
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+            id="cardsContainer"
+          >
+            <div
+              id="galleryTeachersCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">🖼️</span>
+                <h3 class="text-2xl font-bold text-white">
+                  Gallery &amp; Guru-Guru Kami
+                </h3>
+              </div>
+              <p class="text-blue-100 mb-4 font-medium">
+                Koleksi foto, karya siswa &amp; guru-guru Kelas 7-J
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-semibold">
+                  Lihat selengkapnya →
+                </p>
+              </div>
+            </div>
+            <div
+              id="dailyHabitsCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">📋</span>
+                <h3 class="text-2xl font-bold text-white">Pembiasaan Kita</h3>
+              </div>
+              <p class="text-purple-100 mb-4 font-medium">
+                Kebiasaan baik yang kita lakukan setiap hari
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-bold">Lihat pembiasaan →</p>
+              </div>
+            </div>
+            <div
+              id="classActivityCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">📚</span>
+                <h3 class="text-2xl font-bold text-white">Jadwal Kelas</h3>
+              </div>
+              <p class="text-indigo-100 mb-4 font-medium">
+                Lihat jadwal pelajaran lengkap Kelas 7-J
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-bold">Lihat jadwal →</p>
+              </div>
+            </div>
+            <div
+              id="attendanceCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-cyan-400 to-cyan-600 border-cyan-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">👥</span>
+                <h3 class="text-2xl font-bold text-white">Daftar Siswa</h3>
+              </div>
+              <p class="text-cyan-100 mb-4 font-medium">
+                Lihat semua 32 siswa kelas 7-J yang luar biasa
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-bold">Lihat daftar siswa →</p>
+              </div>
+            </div>
+            <div
+              id="piketCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-teal-400 to-teal-600 border-teal-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">🧹</span>
+                <h3 class="text-2xl font-bold text-white">Jadwal Piket</h3>
+              </div>
+              <p class="text-teal-100 mb-4 font-medium">
+                Jadwal piket kelas dan tugas kebersihan harian
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-bold">Lihat jadwal piket →</p>
+              </div>
+            </div>
+            <div
+              id="strukturCard"
+              class="card p-6 rounded-3xl shadow-xl border-4 bg-gradient-to-br from-violet-400 to-violet-600 border-violet-300"
+            >
+              <div class="flex items-center mb-4">
+                <span class="text-5xl mr-4">🏆</span>
+                <h3 class="text-2xl font-bold text-white">
+                  Struktur Organisasi
+                </h3>
+              </div>
+              <p class="text-violet-100 mb-4 font-medium">
+                Struktur organisasi dan jabatan di Kelas 7-J
+              </p>
+              <div
+                class="bg-white bg-opacity-30 p-3 rounded-xl border-2 border-white"
+              >
+                <p class="text-sm text-white font-bold">Lihat struktur →</p>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-12">
+            <p id="footerText" class="text-gray-700 font-medium">
+              Made with 💜 by Class 7-J
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Gallery & Teachers Modal -->
+    <div
+      id="galleryTeachersModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="galleryTeachersModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-orange-600 to-red-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">🖼️ Gallery &amp; Guru-Guru</h3>
+          <button
+            id="galleryTeachersClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="galleryTeachersModalBody" class="p-6 overflow-y-auto flex-1">
+          <div class="mb-8">
+            <h4 class="text-2xl font-bold text-orange-600 mb-6 text-center">
+              👨‍�� Guru-Guru Kelas 7-J
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div
+                class="bg-gradient-to-br from-red-100 to-orange-100 p-6 rounded-2xl border-3 border-red-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-red-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-red-700 mb-1">
+                  Dian Sunardi, S.Pd.
+                </h5>
+                <p class="text-sm text-red-600 font-semibold">
+                  �������� Wali Kelas
+                </p>
+                <p class="text-sm text-red-600">📚 IPS</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-blue-100 to-cyan-100 p-6 rounded-2xl border-3 border-blue-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-blue-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-blue-700 mb-1">
+                  Nursolihah, S.Pd., M.Hum.
+                </h5>
+                <p class="text-sm text-blue-600">📚 Bahasa Sunda</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-green-100 to-emerald-100 p-6 rounded-2xl border-3 border-green-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-green-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-green-700 mb-1">
+                  Irfah, S.Pd.
+                </h5>
+                <p class="text-sm text-green-600">🔬 IPA</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-purple-100 to-violet-100 p-6 rounded-2xl border-3 border-purple-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-purple-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-purple-700 mb-1">
+                  Gita Ananda Putri, S.Pd.
+                </h5>
+                <p class="text-sm text-purple-600">🔢 Matematika</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-pink-100 to-rose-100 p-6 rounded-2xl border-3 border-pink-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-pink-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-pink-700 mb-1">
+                  Santi Juansah, S.Pd.
+                </h5>
+                <p class="text-sm text-pink-600">🇮🇩 Pendidikan Pancasila</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-yellow-100 to-amber-100 p-6 rounded-2xl border-3 border-yellow-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-yellow-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-yellow-700 mb-1">
+                  Dewi Kartiwi, S.Pd.
+                </h5>
+                <p class="text-sm text-yellow-600">🎨 Seni &amp; Prakarya</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-indigo-100 to-blue-100 p-6 rounded-2xl border-3 border-indigo-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-indigo-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-indigo-700 mb-1">
+                  Desty Nur Wahyuni, S.Pd.
+                </h5>
+                <p class="text-sm text-indigo-600">📖 Bahasa Indonesia</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-teal-100 to-cyan-100 p-6 rounded-2xl border-3 border-teal-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-teal-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-teal-700 mb-1">
+                  Irwan Medriana, S.Pd.
+                </h5>
+                <p class="text-sm text-teal-600">🗣️ Bahasa Inggris</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-orange-100 to-red-100 p-6 rounded-2xl border-3 border-orange-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-orange-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-orange-700 mb-1">
+                  Rahmat Rosadi, S.Pd.
+                </h5>
+                <p class="text-sm text-orange-600">⚽ PJOK</p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-lime-100 to-green-100 p-6 rounded-2xl border-3 border-lime-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-lime-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-lime-700 mb-1">
+                  Ai Sadiah, S.Ag.
+                </h5>
+                <p class="text-sm text-lime-600">
+                  🕌 Pendidikan Agama Islam (PAI)
+                </p>
+              </div>
+              <div
+                class="bg-gradient-to-br from-fuchsia-100 to-pink-100 p-6 rounded-2xl border-3 border-fuchsia-300 shadow-lg hover:shadow-xl transition-all"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl mb-4 flex items-center justify-center border-2 border-fuchsia-400"
+                >
+                  <span class="text-6xl">📷</span>
+                </div>
+                <h5 class="text-lg font-bold text-fuchsia-700 mb-1">
+                  Widia Panca Wati, S.Tr.Kom.
+                </h5>
+                <p class="text-sm text-fuchsia-600">💻 Informatika</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-8 p-6 bg-blue-50 rounded-2xl border-2 border-blue-300">
+            <p class="text-center text-blue-700 font-semibold">
+              💡 Klik kotak foto di atas untuk mengunggah foto guru-guru kami!
+            </p>
+          </div>
+          <div class="mt-12 pt-8 border-t-4 border-orange-300">
+            <h4 class="text-3xl font-bold text-orange-600 mb-8 text-center">
+              🎞️ Galeri Foto Kelas 7-J
+            </h4>
+            <div id="galleryGrid" class="space-y-6 flex flex-col"></div>
+            <div class="mt-8 text-center">
+              <p class="text-gray-600 font-semibold">
+                �� Klik foto untuk mengubah atau tambah foto baru!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Daily Habits Modal -->
+    <div
+      id="dailyHabitsModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="dailyHabitsModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-amber-600 to-yellow-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">📖 Pembiasaan Kita</h3>
+          <button
+            id="dailyHabitsClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="dailyHabitsModalBody" class="p-6 overflow-y-auto flex-1">
+          <div
+            class="bg-gradient-to-r from-red-100 to-orange-100 p-5 rounded-xl border-2 border-red-300 mb-6"
+          >
+            <h4 class="font-bold text-red-700 text-lg mb-3">
+              📅 Pembiasaan Harian Kelas 7-J
+            </h4>
+            <div class="space-y-3">
+              <div class="bg-blue-50 p-4 rounded-lg border-2 border-blue-300">
+                <h4 class="font-bold text-blue-700 text-lg mb-1">
+                  🇮🇩 SENIN - Upacara
+                </h4>
+                <p class="text-blue-600">
+                  Upacara bendera untuk memupuk rasa cinta tanah air
+                </p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg border-2 border-green-300">
+                <h4 class="font-bold text-green-700 text-lg mb-1">
+                  🤸 SELASA - Senam
+                </h4>
+                <p class="text-green-600">
+                  Senam bersama untuk menjaga kesehatan tubuh
+                </p>
+              </div>
+              <div class="bg-cyan-50 p-4 rounded-lg border-2 border-cyan-300">
+                <h4 class="font-bold text-cyan-700 text-lg mb-1">
+                  🤸 RABU - Senam
+                </h4>
+                <p class="text-cyan-600">
+                  Senam bersama untuk menjaga kesehatan tubuh
+                </p>
+              </div>
+              <div
+                class="bg-purple-50 p-4 rounded-lg border-2 border-purple-300"
+              >
+                <h4 class="font-bold text-purple-700 text-lg mb-1">
+                  📚 KAMIS - Literasi
+                </h4>
+                <p class="text-purple-600">
+                  Membaca dan meningkatkan literasi siswa
+                </p>
+              </div>
+              <div class="bg-pink-50 p-4 rounded-lg border-2 border-pink-300">
+                <h4 class="font-bold text-pink-700 text-lg mb-1">
+                  🤲 JUMAT - Sholat Duha &amp; Baca Al-Quran
+                </h4>
+                <p class="text-pink-600">
+                  Sholat duha dan membaca Al-Quran bersama-sama
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Class Activity Modal -->
+    <div
+      id="classActivityModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="classActivityModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-yellow-600 to-orange-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">📚 Jadwal Kelas 7-J</h3>
+          <button
+            id="classActivityClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="classActivityModalBody" class="p-6 overflow-y-auto flex-1">
+          <div class="mb-6">
+            <h4 class="text-xl font-bold text-blue-600 mb-3 flex items-center">
+              <span class="w-3 h-3 bg-blue-600 rounded-full mr-2"></span> SENIN
+            </h4>
+            <div class="space-y-2 ml-5">
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-300">
+                <div class="font-semibold text-blue-700">
+                  07:30 – 08:10 ��� Bahasa Sunda
+                </div>
+              </div>
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-300">
+                <div class="font-semibold text-blue-700">
+                  08:10 – 08:50 → Bahasa Sunda
+                </div>
+              </div>
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-300">
+                <div class="font-semibold text-blue-700">
+                  08:50 – 09:30 → Matematika
+                </div>
+              </div>
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-300">
+                <div class="font-semibold text-blue-700">
+                  09:30 ��� 10:10 → Matematika
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h4 class="text-xl font-bold text-green-600 mb-3 flex items-center">
+              <span class="w-3 h-3 bg-green-600 rounded-full mr-2"></span>
+              SELASA
+            </h4>
+            <div class="space-y-2 ml-5">
+              <div class="bg-green-50 p-3 rounded-lg border border-green-300">
+                <div class="font-semibold text-green-700">
+                  07:30 – 08:10 → IPA
+                </div>
+              </div>
+              <div class="bg-green-50 p-3 rounded-lg border border-green-300">
+                <div class="font-semibold text-green-700">
+                  08:10 – 08:50 → IPA
+                </div>
+              </div>
+              <div class="bg-green-50 p-3 rounded-lg border border-green-300">
+                <div class="font-semibold text-green-700">
+                  08:50 – 09:30 → Bahasa Indonesia
+                </div>
+              </div>
+              <div class="bg-green-50 p-3 rounded-lg border border-green-300">
+                <div class="font-semibold text-green-700">
+                  09:30 – 10:10 → Bahasa Indonesia
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h4
+              class="text-xl font-bold text-purple-600 mb-3 flex items-center"
+            >
+              <span class="w-3 h-3 bg-purple-600 rounded-full mr-2"></span> RABU
+            </h4>
+            <div class="space-y-2 ml-5">
+              <div class="bg-purple-50 p-3 rounded-lg border border-purple-300">
+                <div class="font-semibold text-purple-700">
+                  07:30 – 08:10 → IPS
+                </div>
+              </div>
+              <div class="bg-purple-50 p-3 rounded-lg border border-purple-300">
+                <div class="font-semibold text-purple-700">
+                  08:10 – 08:50 → IPS
+                </div>
+              </div>
+              <div class="bg-purple-50 p-3 rounded-lg border border-purple-300">
+                <div class="font-semibold text-purple-700">
+                  08:50 – 09:30 → Seni Budaya
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h4
+              class="text-xl font-bold text-orange-600 mb-3 flex items-center"
+            >
+              <span class="w-3 h-3 bg-orange-600 rounded-full mr-2"></span>
+              KAMIS
+            </h4>
+            <div class="space-y-2 ml-5">
+              <div class="bg-orange-50 p-3 rounded-lg border border-orange-300">
+                <div class="font-semibold text-orange-700">
+                  07:30 – 08:10 → Olahraga
+                </div>
+              </div>
+              <div class="bg-orange-50 p-3 rounded-lg border border-orange-300">
+                <div class="font-semibold text-orange-700">
+                  08:10 – 08:50 → Olahraga
+                </div>
+              </div>
+              <div class="bg-orange-50 p-3 rounded-lg border border-orange-300">
+                <div class="font-semibold text-orange-700">
+                  08:50 – 09:30 → TIK
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h4 class="text-xl font-bold text-pink-600 mb-3 flex items-center">
+              <span class="w-3 h-3 bg-pink-600 rounded-full mr-2"></span> JUMAT
+            </h4>
+            <div class="space-y-2 ml-5">
+              <div class="bg-pink-50 p-3 rounded-lg border border-pink-300">
+                <div class="font-semibold text-pink-700">
+                  07:30 ��� 08:10 → Agama
+                </div>
+              </div>
+              <div class="bg-pink-50 p-3 rounded-lg border border-pink-300">
+                <div class="font-semibold text-pink-700">
+                  08:10 – 08:50 → Agama
+                </div>
+              </div>
+              <div class="bg-pink-50 p-3 rounded-lg border border-pink-300">
+                <div class="font-semibold text-pink-700">
+                  08:50 – 09:30 → Pembinaan
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Attendance Modal -->
+    <div
+      id="attendanceModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="attendanceModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-red-600 to-orange-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">👥 Daftar Siswa Kelas 7-J</h3>
+          <button
+            id="attendanceClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="attendanceModalBody" class="p-6 overflow-y-auto flex-1">
+          <div
+            id="attendanceList"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+          ></div>
+          <div class="mt-8 text-center">
+            <p class="text-gray-600 font-semibold text-lg">
+              Total Siswa Kelas 7-J:
+              <span class="text-2xl font-bold text-orange-600">32 Siswa</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Student Detail Modal -->
+    <div
+      id="studentDetailModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] items-center justify-center p-4"
+    >
+      <div
+        class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-orange-600 to-red-600 p-8 text-white text-center relative"
+        >
+          <div id="studentDetailEmoji" class="text-8xl mb-4">🐼</div>
+          <button
+            id="studentDetailClose"
+            class="absolute top-4 right-4 text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div class="p-8">
+          <h3
+            id="studentDetailName"
+            class="text-2xl font-bold text-gray-800 mb-2 text-center"
+          >
+            Nama Siswa
+          </h3>
+          <p
+            id="studentDetailStatus"
+            class="text-center text-sm font-semibold text-orange-600 mb-6"
+          >
+            Status
+          </p>
+          <div class="space-y-4">
+            <div
+              class="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border-2 border-orange-200"
+            >
+              <div class="flex items-center">
+                <span class="text-3xl mr-3">🎯</span>
+                <div>
+                  <p class="text-sm font-semibold text-orange-600 mb-1">
+                    Ekstrakurikuler
+                  </p>
+                  <p id="studentDetailEskul" class="text-gray-800 font-medium">
+                    -
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl border-2 border-amber-200"
+            >
+              <div class="flex items-center">
+                <span class="text-3xl mr-3">😊</span>
+                <div>
+                  <p class="text-sm font-semibold text-amber-600 mb-1">Hobi</p>
+                  <p id="studentDetailHobi" class="text-gray-800 font-medium">
+                    Belajar &amp; Bermain
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border-2 border-purple-200"
+            >
+              <div class="flex items-center">
+                <span class="text-3xl mr-3">✨</span>
+                <div>
+                  <p class="text-sm font-semibold text-purple-600 mb-1">
+                    Status
+                  </p>
+                  <p
+                    id="studentDetailStatus2"
+                    class="text-gray-800 font-medium"
+                  >
+                    Aktif
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Piket Modal -->
+    <div
+      id="piketModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="piketModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-teal-600 to-cyan-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">🧹 Jadwal Piket Kelas</h3>
+          <button
+            id="piketClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="piketModalBody" class="p-6 overflow-y-auto flex-1">
+          <div class="space-y-4">
+            <div
+              class="bg-gradient-to-r from-teal-100 to-cyan-100 p-5 rounded-xl border-2 border-teal-300"
+            >
+              <h4 class="font-bold text-teal-700 text-lg mb-3">📅 SENIN</h4>
+              <p class="text-teal-800 font-semibold">Chino, Gibran, Ihsan</p>
+              <p class="text-teal-800 font-semibold">Shantika, Citra, Alifah</p>
+              <p class="text-sm text-teal-700 mt-2">
+                Tugas: Sapu ruangan, bersihkan papan tulis
+              </p>
+            </div>
+            <div
+              class="bg-gradient-to-r from-cyan-100 to-blue-100 p-5 rounded-xl border-2 border-cyan-300"
+            >
+              <h4 class="font-bold text-cyan-700 text-lg mb-3">📅 SELASA</h4>
+              <p class="text-cyan-800 font-semibold">
+                Anugerah, Rafisky, Raivan
+              </p>
+              <p class="text-cyan-800 font-semibold">Aura, Cyelia, Azahwa</p>
+              <p class="text-sm text-cyan-700 mt-2">
+                Tugas: Rapikan kursi, kemoceng papan tulis
+              </p>
+            </div>
+            <div
+              class="bg-gradient-to-r from-blue-100 to-indigo-100 p-5 rounded-xl border-2 border-blue-300"
+            >
+              <h4 class="font-bold text-blue-700 text-lg mb-3">📅 RABU</h4>
+              <p class="text-blue-800 font-semibold">Adrafa, Rezky, Ghaitsa</p>
+              <p class="text-blue-800 font-semibold">
+                Siti Sarah, Fitriyani, Luthfi
+              </p>
+              <p class="text-sm text-blue-700 mt-2">
+                Tugas: Bersihkan jendela, atur barang
+              </p>
+            </div>
+            <div
+              class="bg-gradient-to-r from-indigo-100 to-purple-100 p-5 rounded-xl border-2 border-indigo-300"
+            >
+              <h4 class="font-bold text-indigo-700 text-lg mb-3">📅 KAMIS</h4>
+              <p class="text-indigo-800 font-semibold">Rizki, Fierza, Melky</p>
+              <p class="text-indigo-800 font-semibold">
+                Khaira, Lucille, Nazila
+              </p>
+              <p class="text-sm text-indigo-700 mt-2">
+                Tugas: Vakum ruangan, rapikan almari
+              </p>
+            </div>
+            <div
+              class="bg-gradient-to-r from-purple-100 to-pink-100 p-5 rounded-xl border-2 border-purple-300"
+            >
+              <h4 class="font-bold text-purple-700 text-lg mb-3">📅 JUMAT</h4>
+              <p class="text-purple-800 font-semibold">Ibarra, Agung, Allan</p>
+              <p class="text-purple-800 font-semibold">Auria, Diva, Tri</p>
+              <p class="text-sm text-purple-700 mt-2">
+                Tugas: Bersihkan halaman, atur sampah
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Struktur Modal -->
+    <div
+      id="strukturModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      style="background: rgba(0, 0, 0, 0.5)"
+    >
+      <div
+        id="strukturModalContent"
+        class="modal-content rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden bg-white"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="bg-gradient-to-r from-pink-600 to-rose-600 p-6 text-white flex justify-between items-center flex-shrink-0"
+        >
+          <h3 class="text-2xl font-bold">🏆 Struktur Organisasi Kelas 7-J</h3>
+          <button
+            id="strukturClose"
+            class="text-white hover:text-gray-200 text-3xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div id="strukturModalBody" class="p-6 overflow-y-auto flex-1">
+          <div class="space-y-4">
+            <div
+              class="bg-gradient-to-r from-red-100 to-rose-100 p-5 rounded-xl border-3 border-red-400"
+            >
+              <h4 class="font-bold text-red-700 text-lg mb-2">👑 Wali Kelas</h4>
+              <p class="text-red-800 font-semibold">Dian Sunardi, S.Pd</p>
+              <p class="text-red-700 text-sm mt-1">📚 Mata Pelajaran: IPS</p>
+            </div>
+            <div
+              class="bg-gradient-to-r from-yellow-100 to-amber-100 p-5 rounded-xl border-3 border-yellow-400"
+            >
+              <h4 class="font-bold text-yellow-700 text-lg mb-2">
+                👑 Ketua Kelas
+              </h4>
+              <p class="text-yellow-800 font-semibold">
+                �� Lucille Lucian Iskandar
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div
+                class="bg-gradient-to-r from-blue-100 to-cyan-100 p-4 rounded-xl border-2 border-blue-300"
+              >
+                <h4 class="font-bold text-blue-700 mb-2">�� Wakil Ketua</h4>
+                <p class="text-blue-800 font-semibold text-sm">
+                  🦁 Muhammad Luthpi Maulidan
+                </p>
+              </div>
+              <div
+                class="bg-gradient-to-r from-purple-100 to-violet-100 p-4 rounded-xl border-2 border-purple-300"
+              >
+                <h4 class="font-bold text-purple-700 mb-2">📋 Sekretaris</h4>
+                <p class="text-purple-800 font-semibold text-sm">
+                  🐰 Diva Fellisya Aprilian
+                </p>
+              </div>
+              <div
+                class="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-xl border-2 border-green-300"
+              >
+                <h4 class="font-bold text-green-700 mb-2">💰 Bendahara</h4>
+                <p class="text-green-800 font-semibold text-sm">
+                  �� Auria Nadhira
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-gradient-to-r from-indigo-100 to-purple-100 p-5 rounded-xl border-2 border-indigo-300 mt-4"
+            >
+              <h4 class="font-bold text-indigo-700 text-lg mb-3">
+                📋 Ketua Bidang
+              </h4>
+              <div class="space-y-3">
+                <div class="bg-white p-4 rounded-lg border border-indigo-300">
+                  <p class="text-sm font-semibold text-indigo-700 mb-2">
+                    🔒 Keamanan
+                  </p>
+                  <p class="text-sm text-indigo-800 font-medium">
+                    🐋 Muhammad Rizki Cahyadi, 🐉 Fieza Rubbian Kamil
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-indigo-300">
+                  <p class="text-sm font-semibold text-indigo-700 mb-2">
+                    🙏 Rohani
+                  </p>
+                  <p class="text-sm text-indigo-800 font-medium">
+                    🐦 Cyleia Wadha Nur Aila, 🦎 Azahwah Nur Hofipah, 🦩 Ghaitsa
+                    Jingga Kirana
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-indigo-300">
+                  <p class="text-sm font-semibold text-indigo-700 mb-2">
+                    📦 Perlengkapan
+                  </p>
+                  <p class="text-sm text-indigo-800 font-medium">
+                    🦝 Aura Maesa Nur Rahma, 🦑 Melky Mochamad Fahrezy
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-indigo-300">
+                  <p class="text-sm font-semibold text-indigo-700 mb-2">
+                    🧹 Kebersihan
+                  </p>
+                  <p class="text-sm text-indigo-800 font-medium">
+                    🐹 Alifah Rahmatal Azzahra
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-indigo-300">
+                  <p class="text-sm font-semibold text-indigo-700 mb-2">
+                    ⚽ Olahraga
+                  </p>
+                  <p class="text-sm text-indigo-800 font-medium">
+                    🐯 Shantika Ratu Azzahra, 🐤 Citra Kirana
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      let isDarkMode = false;
+      let userPreference = localStorage.getItem("darkMode");
+
+      const students = [
+        {
+          emoji: "🐊",
+          name: "Agung Cahya Nur Arif",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐹",
+          name: "Alifah Rahmatal Azzahra (Ipeh)",
+          status: "🧹 Kebersihan",
+          eskul: "💃 Tari",
+        },
+        {
+          emoji: "🦔",
+          name: "Allan Muhammad Rizwan",
+          status: "Siswa",
+          eskul: "-",
+        },
+        {
+          emoji: "🦝",
+          name: "Aura Maesa Nur Rahma",
+          status: "📦 Perlengkapan",
+          eskul: "🎵 Karawitan",
+        },
+        {
+          emoji: "🦊",
+          name: "Auria Nadhira",
+          status: "💰 Bendahara",
+          eskul: "🥋 Taekwondo",
+        },
+        {
+          emoji: "🦎",
+          name: "Azahwah Nur Hofipah",
+          status: "🙏 Rohani",
+          eskul: "🚩 Paskib",
+        },
+        {
+          emoji: "🦀",
+          name: "Ibarra Djovan Jaelani",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐼",
+          name: "Chino Moreno Molko Fabio",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐤",
+          name: "Citra Kirana",
+          status: "⚽ Olahraga",
+          eskul: "🏸 Badminton",
+        },
+        {
+          emoji: "🐦",
+          name: "Cyleia Wadha Nur Aila",
+          status: "🙏 Rohani",
+          eskul: "���� PMR",
+        },
+        {
+          emoji: "🐰",
+          name: "Diva Fellisya Aprilian (Dipa)",
+          status: "📋 Sekretaris",
+          eskul: "🚩 Paskib",
+        },
+        {
+          emoji: "🐉",
+          name: "Fieza Rubbian Kamil A",
+          status: "🔒 Keamanan",
+          eskul: "🎵 Irmani",
+        },
+        { emoji: "🐢", name: "Fitriyani", status: "Siswa", eskul: "💃 Tari" },
+        {
+          emoji: "🦩",
+          name: "Ghaitsa Jingga Kirana",
+          status: "🙏 Rohani",
+          eskul: "🚑 PMR",
+        },
+        {
+          emoji: "🦕",
+          name: "Gibran Naufal Azka Nuryanto",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🦇",
+          name: "Ihsan Muhamad Bintang",
+          status: "Siswa",
+          eskul: "-",
+        },
+        {
+          emoji: "🐸",
+          name: "Lucille Lucian Iskandar",
+          status: "👑 Ketua Kelas",
+          eskul: "🏛️ OSIS",
+        },
+        {
+          emoji: "🦑",
+          name: "Melky Mochamad Fahrezy",
+          status: "📦 Perlengkapan",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🕷️",
+          name: "Mochamad Rezky Septian",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐧",
+          name: "Muhamad Anugerah Putra s.kom",
+          status: "Siswa",
+          eskul: "💻 IT",
+        },
+        {
+          emoji: "🐻",
+          name: "Muhamad Salim Nur Rohman",
+          status: "Siswa",
+          eskul: "-",
+        },
+        {
+          emoji: "🦥",
+          name: "Muhammad Adrafa Al-Ghifari",
+          status: "Siswa",
+          eskul: "🏛️ OSIS",
+        },
+        {
+          emoji: "🦁",
+          name: "Muhammad Luthpi Maulidan",
+          status: "📝 Wakil Ketua",
+          eskul: "🏸 Badminton",
+        },
+        {
+          emoji: "🦉",
+          name: "Muhammad Raivan Alfarizky",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐋",
+          name: "Muhammad Rizki Cahyadi (Caca)",
+          status: "��� Keamanan",
+          eskul: "🏸 Badminton",
+        },
+        {
+          emoji: "🦞",
+          name: "Nazila Eka Almadina (Zila)",
+          status: "Siswa",
+          eskul: "🚩 Paskib, 🎵 Karawitan",
+        },
+        {
+          emoji: "😿",
+          name: "Nelva Khairah Zulyanti (Kaira)",
+          status: "Siswa",
+          eskul: "🥋 Taekwondo",
+        },
+        {
+          emoji: "🕊️",
+          name: "Rafisky Alkausar",
+          status: "Siswa",
+          eskul: "⚽ Futsal",
+        },
+        {
+          emoji: "🐯",
+          name: "Shantika Ratu Azzahra",
+          status: "⚽ Olahraga",
+          eskul: "-",
+        },
+        {
+          emoji: "🐡",
+          name: "Siti Sarah Khumaira",
+          status: "Siswa",
+          eskul: "-",
+        },
+        {
+          emoji: "🐿️",
+          name: "Tri Khalida Mubasyiroh",
+          status: "Siswa",
+          eskul: "💻 IT",
+        },
+        {
+          emoji: "🦅",
+          name: "Wira Yuda Putra Wahyudi",
+          status: "Siswa",
+          eskul: "-",
+        },
+      ];
+
+      const defaultConfig = {
+        main_title: "Class 7-J",
+        subtitle: "Together We Learn, Together We Grow! 🌟",
+        footer_text: "Made with 💜 by Class 7-J",
+        font_family: "Poppins",
+        font_size: 16,
+      };
+
+      function createStars() {
+        const starsContainer = document.getElementById("starsContainer");
+        starsContainer.innerHTML = "";
+
+        for (let i = 0; i < 80; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          const left = Math.random() * 100;
+          const top = Math.random() * 100;
+
+          star.style.left = left + "%";
+          star.style.top = top + "%";
+          star.style.width = Math.random() * 3 + 1 + "px";
+          star.style.height = star.style.width;
+          star.style.animationDelay = Math.random() * 2.5 + "s";
+          starsContainer.appendChild(star);
+        }
+
+        window.fallingStarInterval = setInterval(() => {
+          if (!isDarkMode) return;
+
+          const starsContainer = document.getElementById("starsContainer");
+          if (!starsContainer) return;
+
+          const fallingStar = document.createElement("div");
+          fallingStar.className = "falling-star";
+
+          const leftPos = Math.random() * 100;
+          const duration = Math.random() * 1.5 + 2;
+          const sparkleSpeed = Math.random() * 0.5 + 0.3;
+
+          fallingStar.style.left = leftPos + "%";
+          fallingStar.style.top = "-20px";
+          fallingStar.style.animation = `fall ${duration}s linear forwards, fallSparkle ${sparkleSpeed}s ease-in-out infinite`;
+
+          starsContainer.appendChild(fallingStar);
+
+          setTimeout(() => {
+            fallingStar.remove();
+          }, duration * 1000);
+        }, 300);
+      }
+
+      async function setDarkMode(dark) {
+        isDarkMode = dark;
+        const appWrapper = document.getElementById("appWrapper");
+        const celestialBody = document.getElementById("celestialBody");
+        const modeToggle = document.getElementById("modeToggle");
+        const starsContainer = document.getElementById("starsContainer");
+        const clouds = document.querySelectorAll(".cloud");
+
+        if (dark) {
+          appWrapper.style.background =
+            "linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e293b 100%)";
+          celestialBody.style.background =
+            "radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%)";
+          celestialBody.style.boxShadow =
+            "0 0 80px rgba(248, 249, 250, 0.6), 0 0 120px rgba(226, 232, 240, 0.3)";
+          celestialBody.classList.remove("sun");
+          celestialBody.classList.add("moon");
+          modeToggle.innerHTML = "☀️";
+          starsContainer.style.opacity = "1";
+          clouds.forEach((cloud) => (cloud.style.display = "none"));
+          createStars();
+          updateModalsTheme("dark");
+          updateCardsTheme("dark");
+        } else {
+          appWrapper.style.background =
+            "linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #FFF8DC 100%)";
+          celestialBody.style.background =
+            "radial-gradient(circle, #FFD700 0%, #FFA500 100%)";
+          celestialBody.style.boxShadow =
+            "0 0 60px rgba(255, 215, 0, 0.6), 0 0 100px rgba(255, 165, 0, 0.3)";
+          celestialBody.classList.add("sun");
+          celestialBody.classList.remove("moon");
+          modeToggle.innerHTML = "���";
+          starsContainer.style.opacity = "0";
+          starsContainer.innerHTML = "";
+          if (window.fallingStarInterval) {
+            clearInterval(window.fallingStarInterval);
+          }
+          clouds.forEach((cloud) => (cloud.style.display = "block"));
+          updateModalsTheme("light");
+          updateCardsTheme("light");
+        }
+
+        if (window.elementSdk && window.elementSdk.config) {
+          await onConfigChange(window.elementSdk.config);
+        }
+        localStorage.setItem("darkMode", dark ? "true" : "false");
+      }
+
+      function updateCardsTheme(theme) {
+        const cardsContainer = document.getElementById("cardsContainer");
+        if (cardsContainer) {
+          const cards = cardsContainer.querySelectorAll('[id$="Card"]');
+          cards.forEach((card) => {
+            if (theme === "dark") {
+              card.style.background = "rgba(0, 0, 0, 0.3)";
+              card.style.backdropFilter = "blur(10px)";
+              card.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+              card.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.5)";
+              card.querySelector("h3").style.color = "#fff";
+              const spans = card.querySelectorAll("span");
+              spans.forEach(
+                (span) =>
+                  (span.style.filter =
+                    "drop-shadow(0 0 8px rgba(0, 0, 0, 0.5))"),
+              );
+              const paragraphs = card.querySelectorAll("p");
+              paragraphs.forEach((p) => (p.style.color = "#e0e7ff"));
+              const div = card.querySelector("div:last-child");
+              if (div) {
+                div.style.background = "rgba(255, 255, 255, 0.1)";
+                div.style.backdropFilter = "blur(5px)";
+                div.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+                const innerP = div.querySelector("p");
+                if (innerP) innerP.style.color = "#fff";
+              }
+            } else {
+              card.style.background = "";
+              card.style.backdropFilter = "";
+              card.style.border = "";
+              card.style.boxShadow = "";
+              card.querySelector("h3").style.color = "";
+              const spans = card.querySelectorAll("span");
+              spans.forEach((span) => (span.style.filter = ""));
+              const paragraphs = card.querySelectorAll("p");
+              paragraphs.forEach((p) => (p.style.color = ""));
+              const div = card.querySelector("div:last-child");
+              if (div) {
+                div.style.background = "";
+                div.style.backdropFilter = "";
+                div.style.border = "";
+                const innerP = div.querySelector("p");
+                if (innerP) innerP.style.color = "";
+              }
+            }
+          });
+        }
+      }
+
+      function updateModalsTheme(theme) {
+        const modals = [
+          "galleryTeachersModal",
+          "dailyHabitsModal",
+          "classActivityModal",
+          "attendanceModal",
+          "piketModal",
+          "strukturModal",
+        ];
+
+        modals.forEach((modalId) => {
+          const modal = document.getElementById(modalId);
+          if (modal) {
+            if (theme === "light") {
+              modal.style.background = "rgba(0, 0, 0, 0.5)";
+            } else {
+              modal.style.background = "rgba(0, 0, 0, 0.7)";
+            }
+          }
+
+          const modalContent = document.getElementById(modalId + "Content");
+          if (modalContent) {
+            if (theme === "light") {
+              modalContent.style.background = "white";
+            } else {
+              modalContent.style.background = "#1f2937";
+            }
+          }
+        });
+      }
+
+      async function onConfigChange(config) {
+        const customFont = config.font_family || defaultConfig.font_family;
+        const baseFontStack = "sans-serif";
+        const baseSize = config.font_size || defaultConfig.font_size;
+
+        const mainTitle = document.getElementById("mainTitle");
+        if (mainTitle) {
+          mainTitle.textContent = config.main_title || defaultConfig.main_title;
+          mainTitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+          mainTitle.style.fontSize = `${baseSize * 3.5}px`;
+        }
+
+        const subtitle = document.getElementById("subtitle");
+        if (subtitle) {
+          subtitle.textContent = config.subtitle || defaultConfig.subtitle;
+          subtitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+          subtitle.style.fontSize = `${baseSize * 1.25}px`;
+          subtitle.style.color = isDarkMode ? "#e0e7ff" : "#374151";
+        }
+
+        const footerText = document.getElementById("footerText");
+        if (footerText) {
+          footerText.textContent =
+            config.footer_text || defaultConfig.footer_text;
+          footerText.style.fontFamily = `${customFont}, ${baseFontStack}`;
+          footerText.style.fontSize = `${baseSize}px`;
+          footerText.style.color = isDarkMode ? "#cbd5e1" : "#374151";
+        }
+
+        if (mainTitle) {
+          mainTitle.style.background = isDarkMode
+            ? "linear-gradient(to right, #60a5fa, #93c5fd)"
+            : "linear-gradient(to right, #ea580c, #dc2626)";
+          mainTitle.style.webkitBackgroundClip = "text";
+          mainTitle.style.webkitTextFillColor = "transparent";
+          mainTitle.style.backgroundClip = "text";
+        }
+      }
+
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            },
+          },
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map([
+          ["main_title", config.main_title || defaultConfig.main_title],
+          ["subtitle", config.subtitle || defaultConfig.subtitle],
+          ["footer_text", config.footer_text || defaultConfig.footer_text],
+        ]);
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues,
+        });
+      }
+
+      function renderStudentList() {
+        const attendanceList = document.getElementById("attendanceList");
+        if (!attendanceList) return;
+
+        const gradients = [
+          "from-pink-100 to-rose-100 border-pink-300",
+          "from-purple-100 to-violet-100 border-purple-300",
+          "from-blue-100 to-cyan-100 border-blue-300",
+          "from-green-100 to-emerald-100 border-green-300",
+          "from-yellow-100 to-amber-100 border-yellow-300",
+          "from-orange-100 to-red-100 border-orange-300",
+          "from-teal-100 to-cyan-100 border-teal-300",
+          "from-indigo-100 to-purple-100 border-indigo-300",
+          "from-lime-100 to-green-100 border-lime-300",
+          "from-fuchsia-100 to-pink-100 border-fuchsia-300",
+        ];
+
+        attendanceList.innerHTML = students
+          .map((student, index) => {
+            const gradient = gradients[index % gradients.length];
+            return `
+          <div data-student-index="${index}" class="student-card bg-gradient-to-br ${gradient} p-6 rounded-3xl border-4 text-center cursor-grab shadow-xl flex flex-col items-center justify-center gap-2">
+            <div class="emoji-container" style="font-size: 3.5rem;">${student.emoji}</div>
+            <div style="background: rgba(0,0,0,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #333;">
+              ${student.status}
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+
+        const cards = attendanceList.querySelectorAll(".student-card");
+        cards.forEach((card) => {
+          let mouseDown = false;
+          let mouseDownTime = 0;
+
+          card.addEventListener("mousedown", (e) => {
+            mouseDown = true;
+            mouseDownTime = Date.now();
+            card.style.transition = "none";
+          });
+
+          card.addEventListener("mousemove", (e) => {
+            if (!mouseDown) return;
+
+            const timeDelta = Date.now() - mouseDownTime;
+            if (timeDelta < 200) return;
+
+            const rect = card.getBoundingClientRect();
+            const deltaY = e.clientY - rect.top - rect.height / 2;
+            const deltaX = e.clientX - rect.left - rect.width / 2;
+
+            card.classList.add("dragging");
+            card.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.05)`;
+          });
+
+          card.addEventListener("mouseup", (e) => {
+            const timeDelta = Date.now() - mouseDownTime;
+            mouseDown = false;
+
+            if (timeDelta < 200) {
+              const index = parseInt(card.getAttribute("data-student-index"));
+              showStudentDetail(index);
+            }
+
+            card.classList.remove("dragging");
+            card.style.transform = "";
+            card.style.transition = "";
+          });
+
+          card.addEventListener("mouseleave", () => {
+            mouseDown = false;
+            card.classList.remove("dragging");
+            card.style.transform = "";
+            card.style.transition = "";
+          });
+        });
+      }
+
+      function showStudentDetail(index) {
+        const student = students[index];
+        document.getElementById("studentDetailEmoji").textContent =
+          student.emoji;
+        document.getElementById("studentDetailName").textContent = student.name;
+        document.getElementById("studentDetailStatus").textContent =
+          student.status;
+        document.getElementById("studentDetailEskul").textContent =
+          student.eskul || "-";
+        document.getElementById("studentDetailHobi").textContent =
+          "Belajar & Bermain";
+        document.getElementById("studentDetailStatus2").textContent = "Aktif";
+        document
+          .getElementById("studentDetailModal")
+          .classList.remove("hidden");
+        document.getElementById("studentDetailModal").classList.add("flex");
+      }
+
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal)
+          (modal.classList.remove("hidden"), modal.classList.add("flex"));
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal)
+          (modal.classList.add("hidden"), modal.classList.remove("flex"));
+      }
+
+      function initGallery() {
+        const galleryGrid = document.getElementById("galleryGrid");
+        if (!galleryGrid) return;
+
+        let galleryPhotos = JSON.parse(localStorage.getItem("galleryPhotos"));
+
+        if (
+          !galleryPhotos ||
+          !Array.isArray(galleryPhotos) ||
+          galleryPhotos.length < 4
+        ) {
+          galleryPhotos = [
+            { id: 1, title: "Kebersamaan Kelas", src: null },
+            { id: 2, title: "Saat Belajar", src: null },
+            { id: 3, title: "Acara Kelas", src: null },
+            { id: 4, title: "Momen Spesial", src: null },
+          ];
+          localStorage.setItem("galleryPhotos", JSON.stringify(galleryPhotos));
+        }
+
+        galleryGrid.innerHTML = galleryPhotos
+          .map(
+            (photo, index) => `
+        <div class="group relative cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all w-full">
+          <div class="aspect-video bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center relative overflow-hidden" onclick="openPhotoUpload(${index})">
+            ${
+              photo.src
+                ? `
+              <img src="${photo.src}" alt="${photo.title}" class="w-full h-full object-cover" loading="lazy" onerror="console.error('Image failed:', this.src); this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full bg-gray-300 flex items-center justify-center text-6xl\\'>📷</div>';">
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                <span class="text-white text-5xl opacity-0 group-hover:opacity-100 transition-all">✏️</span>
+              </div>
+            `
+                : `
+              <div class="text-6xl">📷</div>
+            `
+            }
+          </div>
+          <div class="bg-white p-4 text-center border-t-4 border-orange-300">
+            <p class="font-bold text-gray-800">${photo.title}</p>
+            <p class="text-sm text-orange-600 font-semibold mt-1">Klik untuk ${photo.src ? "ubah" : "upload"} foto</p>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function openPhotoUpload(index) {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file && file.size <= 5242880) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              let galleryPhotos = JSON.parse(
+                localStorage.getItem("galleryPhotos"),
+              );
+              if (!galleryPhotos) {
+                galleryPhotos = [
+                  { id: 1, title: "Kebersamaan Kelas", src: null },
+                  { id: 2, title: "Saat Belajar", src: null },
+                  { id: 3, title: "Acara Kelas", src: null },
+                ];
+              }
+              if (galleryPhotos[index]) {
+                galleryPhotos[index].src = event.target.result;
+                localStorage.setItem(
+                  "galleryPhotos",
+                  JSON.stringify(galleryPhotos),
+                );
+                initGallery();
+              }
+            };
+            reader.readAsDataURL(file);
+          } else if (file && file.size > 5242880) {
+            alert("Ukuran foto terlalu besar! Maksimal 5MB");
+          }
+        };
+        input.click();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (userPreference === "true") setDarkMode(true);
+        else setDarkMode(false);
+        renderStudentList();
+        initGallery();
+
+        document.getElementById("modeToggle").addEventListener("click", () => {
+          setDarkMode(!isDarkMode);
+        });
+        document
+          .getElementById("celestialBody")
+          .addEventListener("click", () => null);
+
+        document
+          .getElementById("galleryTeachersCard")
+          .addEventListener("click", () => openModal("galleryTeachersModal"));
+        document
+          .getElementById("dailyHabitsCard")
+          .addEventListener("click", () => openModal("dailyHabitsModal"));
+        document
+          .getElementById("classActivityCard")
+          .addEventListener("click", () => openModal("classActivityModal"));
+        document
+          .getElementById("attendanceCard")
+          .addEventListener("click", () => openModal("attendanceModal"));
+        document
+          .getElementById("piketCard")
+          .addEventListener("click", () => openModal("piketModal"));
+        document
+          .getElementById("strukturCard")
+          .addEventListener("click", () => openModal("strukturModal"));
+
+        document
+          .getElementById("galleryTeachersClose")
+          .addEventListener("click", () => closeModal("galleryTeachersModal"));
+        document
+          .getElementById("dailyHabitsClose")
+          .addEventListener("click", () => closeModal("dailyHabitsModal"));
+        document
+          .getElementById("classActivityClose")
+          .addEventListener("click", () => closeModal("classActivityModal"));
+        document
+          .getElementById("attendanceClose")
+          .addEventListener("click", () => closeModal("attendanceModal"));
+        document
+          .getElementById("piketClose")
+          .addEventListener("click", () => closeModal("piketModal"));
+        document
+          .getElementById("strukturClose")
+          .addEventListener("click", () => closeModal("strukturModal"));
+        document
+          .getElementById("studentDetailClose")
+          .addEventListener("click", () => closeModal("studentDetailModal"));
+
+        [
+          "galleryTeachersModal",
+          "dailyHabitsModal",
+          "classActivityModal",
+          "attendanceModal",
+          "piketModal",
+          "strukturModal",
+          "studentDetailModal",
+        ].forEach((id) => {
+          document.getElementById(id).addEventListener("click", (e) => {
+            if (e.target.id === id) closeModal(id);
+          });
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            [
+              "galleryTeachersModal",
+              "dailyHabitsModal",
+              "classActivityModal",
+              "attendanceModal",
+              "piketModal",
+              "strukturModal",
+              "studentDetailModal",
+            ].forEach((id) => {
+              if (!document.getElementById(id).classList.contains("hidden"))
+                closeModal(id);
+            });
+          }
+        });
+      });
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'9cbad9cca38cb5dc',t:'MTc3MDcxODU4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
